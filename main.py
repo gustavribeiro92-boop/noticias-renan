@@ -4,6 +4,7 @@ from feedgen.feed import FeedGenerator
 from datetime import datetime
 
 def extrair_noticias():
+    # Configurações de URL e Identificação
     url_alvo = "https://www.camara-americana.sp.gov.br/Noticia/PaginaVereador/1?vereador=160"
     base_url = "https://www.camara-americana.sp.gov.br"
     link_rss_final = "https://raw.githubusercontent.com/gustavribeiro92-boop/noticias-renan/main/feed.xml"
@@ -11,10 +12,12 @@ def extrair_noticias():
     headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'}
     
     try:
+        # 1. Requisição ao site da Câmara
         response = requests.get(url_alvo, headers=headers, timeout=30)
         response.encoding = 'utf-8'
         soup = BeautifulSoup(response.text, 'html.parser')
         
+        # 2. Localização dos blocos de notícia (link-box)
         blocos = soup.find_all('div', class_='link-box')
         noticias_lista = []
 
@@ -30,7 +33,7 @@ def extrair_noticias():
                 url_img = base_url + tag_img['src'] if tag_img and tag_img.get('src') else ""
                 data_texto = tag_p_data.get_text().strip() if tag_p_data else ""
                 
-                # Transformamos o texto (ex: 03/03/2026) em data real para o Python ordenar
+                # Conversão da data para objeto datetime (permite ordenar numericamente)
                 try:
                     data_obj = datetime.strptime(data_texto, '%d/%m/%Y')
                 except:
@@ -44,16 +47,16 @@ def extrair_noticias():
                     'data_str': data_texto
                 })
 
-        # --- O SEGREDO DA ORDEM CRONOLÓGICA ---
-        # Ordena a lista do maior para o menor (True = Recente Primeiro)
+        # 3. ORDENAÇÃO: Garante que as datas mais recentes (2026) venham primeiro
         noticias_lista.sort(key=lambda x: x['data'], reverse=True)
 
+        # 4. Geração do Feed RSS
         fg = FeedGenerator()
         fg.id(url_alvo)
         fg.title('Notícias - Renan de Angelo')
         fg.link(href=url_alvo, rel='alternate')
         fg.link(href=link_rss_final, rel='self')
-        fg.description('Feed oficial de notícias do gabinete')
+        fg.description('Feed oficial de notícias da Câmara Municipal de Americana')
         fg.language('pt-br')
 
         for n in noticias_lista:
@@ -61,16 +64,18 @@ def extrair_noticias():
             fe.id(n['url'])
             fe.title(n['titulo'])
             fe.link(href=n['url'])
-            # Garante que o RSS informe a data correta para o WordPress
+            
+            # Define a data de publicação oficial para o WordPress reconhecer a ordem
             fe.published(n['data'].replace(tzinfo=None))
             
+            # Inserção da imagem e descrição com tratamento de aspas
             if n['img']:
                 fe.enclosure(n['img'], 0, 'image/jpeg')
-                # Aspas duplas externas para evitar o erro de sintaxe anterior
                 fe.description(f'<img src="{n["img"]}" style="width:100%"/><br/>{n["data_str"]} - {n["titulo"]}')
             else:
                 fe.description(f'{n["data_str"]} - {n["titulo"]}')
 
+        # 5. Salvamento do arquivo
         fg.rss_file('feed.xml', pretty=True)
         print(f"Sucesso! {len(noticias_lista)} notícias processadas e ordenadas.")
 
