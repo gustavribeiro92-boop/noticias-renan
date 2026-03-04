@@ -15,57 +15,65 @@ def extrair_noticias():
         response.encoding = 'utf-8'
         soup = BeautifulSoup(response.text, 'html.parser')
         
-        blocos_noticias = soup.find_all('div', class_='link-box')
+        blocos = soup.find_all('div', class_='link-box')
+        noticias_lista = []
+
+        # Primeiro, extraímos tudo para uma lista para podermos ordenar
+        for bloco in blocos:
+            tag_h4 = bloco.find('h4', class_='color-link')
+            tag_a = bloco.find('a', href=True)
+            tag_img = bloco.find('img')
+            tag_p_data = bloco.find('p', class_='color-link')
+            
+            if tag_h4 and tag_a:
+                titulo = tag_h4.get_text().strip()
+                url_completa = base_url + tag_a['href'].strip() if tag_a['href'].startswith('/') else tag_a['href'].strip()
+                url_img = base_url + tag_img['src'] if tag_img and tag_img.get('src') else ""
+                data_texto = tag_p_data.get_text().strip() if tag_p_data else ""
+                
+                try:
+                    data_obj = datetime.strptime(data_texto, '%d/%m/%Y')
+                except:
+                    data_obj = datetime.now()
+
+                noticias_lista.append({
+                    'titulo': titulo,
+                    'url': url_completa,
+                    'img': url_img,
+                    'data': data_obj,
+                    'data_str': data_texto
+                })
+
+        # ORDENAÇÃO: Coloca as datas mais recentes no topo
+        noticias_lista.sort(key=lambda x: x['data'], reverse=True)
 
         fg = FeedGenerator()
         fg.id(url_alvo)
-        fg.title('Notícias - Renan de Angelo')
+        fg.title('Noticias - Renan de Angelo')
         fg.link(href=url_alvo, rel='alternate')
         fg.link(href=link_rss_final, rel='self')
-        fg.description('Feed oficial de notícias da Câmara Municipal de Americana')
+        fg.description('Feed oficial de noticias do gabinete')
         fg.language('pt-br')
 
-        for bloco in blocos_noticias:
-            tag_h4 = bloco.find('h4', class_='color-link')
-            tag_a = bloco.find('a', href=True)
+        for n in noticias_lista:
+            fe = fg.add_entry()
+            fe.id(n['url'])
+            fe.title(n['titulo'])
+            fe.link(href=n['url'])
+            fe.published(n['data'].replace(tzinfo=None))
             
-            # Extração da Imagem
-            tag_img = bloco.find('img')
-            url_img = base_url + tag_img['src'] if tag_img and tag_img.get('src') else ""
-
-            if tag_h4 and tag_a:
-                titulo = tag_h4.get_text().strip()
-                href = tag_a['href'].strip()
-                url_completa = base_url + href if href.startswith('/') else href
-                
-                # Extração e formatação da Data para Ordem Cronológica
-                tag_p_data = bloco.find('p', class_='color-link')
-                data_texto = tag_p_data.get_text().strip() if tag_p_data else ""
-                
-                fe = fg.add_entry()
-                fe.id(url_completa)
-                fe.title(titulo)
-                fe.link(href=url_completa)
-                
-                # Tenta converter a data (ex: 03/03/2026) para o formato que o RSS entende
-                try:
-                    data_obj = datetime.strptime(data_texto, '%d/%m/%Y')
-                    fe.published(data_obj.replace(tzinfo=None))
-                except:
-                    pass
-
-                # Insere a imagem para o Feedzy reconhecer
-                if url_img:
-                    fe.enclosure(url_img, 0, 'image/jpeg')
-                    fe.description(f'<img src="{url_img}" style="width:100%" /><br/>{titulo}')
-                else:
-                    fe.description(f"Notícia oficial da Câmara de Americana - {data_texto}")
+            # Adiciona a imagem no enclosure (para o Feedzy) e na descrição
+            if n['img']:
+                fe.enclosure(n['img'], 0, 'image/jpeg')
+                fe.description(f'<img src="{n['img']}" style="width:100%"/><br/>{n["data_str"]} - {n["titulo"]}')
+            else:
+                fe.description(f'{n["data_str"]} - {n["titulo"]}')
 
         fg.rss_file('feed.xml', pretty=True)
-        print(f"Sucesso! {len(blocos_noticias)} notícias processadas com imagens.")
+        print(f"Sucesso! {len(noticias_lista)} noticias ordenadas.")
 
     except Exception as e:
-        print(f"Erro no scraping: {e}")
+        print(f"Erro: {e}")
 
 if __name__ == "__main__":
     extrair_noticias()
