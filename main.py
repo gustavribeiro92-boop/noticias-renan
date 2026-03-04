@@ -3,6 +3,7 @@ from bs4 import BeautifulSoup
 from feedgen.feed import FeedGenerator
 
 def extrair_noticias():
+    # URL filtrada para o vereador Renan de Angelo (ID 160)
     url_alvo = "https://www.camara-americana.sp.gov.br/Noticia/PaginaVereador/1?vereador=160"
     base_url = "https://www.camara-americana.sp.gov.br"
     link_rss_final = "https://raw.githubusercontent.com/gustavribeiro92-boop/noticias-renan/main/feed.xml"
@@ -14,7 +15,7 @@ def extrair_noticias():
         response.encoding = 'utf-8'
         soup = BeautifulSoup(response.text, 'html.parser')
         
-        # O SEGREDO: Agora buscamos pela classe 'link-box' que vimos no seu HTML
+        # O HTML da Câmara usa 'link-box' para cada bloco de notícia
         blocos_noticias = soup.find_all('div', class_='link-box')
 
         fg = FeedGenerator()
@@ -26,18 +27,18 @@ def extrair_noticias():
         fg.language('pt-br')
 
         for bloco in blocos_noticias:
-            # Busca o título e o link dentro do <h4>
+            # O título está dentro de um <h4> e o link no <a> que o envolve
             tag_h4 = bloco.find('h4', class_='color-link')
-            tag_a = tag_h4.find_parent('a') if tag_h4 else None
+            tag_a = bloco.find('a', href=True)
             
             if tag_h4 and tag_a:
                 titulo = tag_h4.get_text().strip()
                 href = tag_a['href'].strip()
                 url_completa = base_url + href if href.startswith('/') else href
                 
-                # Busca a data no parágrafo acima do título
-                tag_data = bloco.find('p', class_='color-link')
-                data_texto = tag_data.get_text().strip() if tag_data else ""
+                # A data está no parágrafo com classe 'color-link'
+                tag_p_data = bloco.find('p', class_='color-link')
+                data_texto = tag_p_data.get_text().strip() if tag_p_data else ""
 
                 fe = fg.add_entry()
                 fe.id(url_completa)
@@ -46,7 +47,7 @@ def extrair_noticias():
                 fe.description(f"Data: {data_texto} - Notícia oficial da Câmara de Americana.")
 
         fg.rss_file('feed.xml', pretty=True)
-        print(f"Sucesso! {len(blocos_noticias)} notícias processadas.")
+        print(f"Sucesso! {len(blocos_noticias)} notícias encontradas.")
 
     except Exception as e:
         print(f"Erro no scraping: {e}")
