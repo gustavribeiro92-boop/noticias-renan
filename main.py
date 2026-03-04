@@ -4,6 +4,7 @@ from feedgen.feed import FeedGenerator
 from datetime import datetime
 
 def extrair_noticias():
+    # URL oficial do vereador Renan de Angelo e o link do seu RSS no GitHub
     url_alvo = "https://www.camara-americana.sp.gov.br/Noticia/PaginaVereador/1?vereador=160"
     base_url = "https://www.camara-americana.sp.gov.br"
     link_rss_final = "https://raw.githubusercontent.com/gustavribeiro92-boop/noticias-renan/main/feed.xml"
@@ -15,10 +16,10 @@ def extrair_noticias():
         response.encoding = 'utf-8'
         soup = BeautifulSoup(response.text, 'html.parser')
         
+        # Busca os blocos de notícias (link-box) conforme o HTML da Câmara
         blocos = soup.find_all('div', class_='link-box')
         noticias_lista = []
 
-        # Primeiro, extraímos tudo para uma lista para podermos ordenar
         for bloco in blocos:
             tag_h4 = bloco.find('h4', class_='color-link')
             tag_a = bloco.find('a', href=True)
@@ -31,6 +32,7 @@ def extrair_noticias():
                 url_img = base_url + tag_img['src'] if tag_img and tag_img.get('src') else ""
                 data_texto = tag_p_data.get_text().strip() if tag_p_data else ""
                 
+                # Converte a data (ex: 03/03/2026) para objeto de tempo para ordenação
                 try:
                     data_obj = datetime.strptime(data_texto, '%d/%m/%Y')
                 except:
@@ -44,15 +46,15 @@ def extrair_noticias():
                     'data_str': data_texto
                 })
 
-        # ORDENAÇÃO: Coloca as datas mais recentes no topo
+        # ORDENAÇÃO: Garante que as notícias de 2026 fiquem no topo
         noticias_lista.sort(key=lambda x: x['data'], reverse=True)
 
         fg = FeedGenerator()
         fg.id(url_alvo)
-        fg.title('Noticias - Renan de Angelo')
+        fg.title('Notícias - Renan de Angelo')
         fg.link(href=url_alvo, rel='alternate')
         fg.link(href=link_rss_final, rel='self')
-        fg.description('Feed oficial de noticias do gabinete')
+        fg.description('Feed oficial de notícias da Câmara Municipal de Americana')
         fg.language('pt-br')
 
         for n in noticias_lista:
@@ -62,18 +64,19 @@ def extrair_noticias():
             fe.link(href=n['url'])
             fe.published(n['data'].replace(tzinfo=None))
             
-            # Adiciona a imagem no enclosure (para o Feedzy) e na descrição
+            # Formatação HTML da descrição para garantir a foto no WordPress/Feedzy
             if n['img']:
                 fe.enclosure(n['img'], 0, 'image/jpeg')
-                fe.description(f'<img src="{n['img']}" style="width:100%"/><br/>{n["data_str"]} - {n["titulo"]}')
+                # Uso de aspas duplas externas para evitar erro de sintaxe com o dicionário
+                fe.description(f'<img src="{n["img"]}" style="width:100%"/><br/>{n["data_str"]} - {n["titulo"]}')
             else:
                 fe.description(f'{n["data_str"]} - {n["titulo"]}')
 
         fg.rss_file('feed.xml', pretty=True)
-        print(f"Sucesso! {len(noticias_lista)} noticias ordenadas.")
+        print(f"Sucesso! {len(noticias_lista)} notícias processadas e ordenadas.")
 
     except Exception as e:
-        print(f"Erro: {e}")
+        print(f"Erro no processamento: {e}")
 
 if __name__ == "__main__":
     extrair_noticias()
