@@ -1,0 +1,25 @@
+name: Atualizar RSS
+on:
+  schedule:
+    - cron: '0 9,18 * * *'
+  workflow_dispatch:
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+      - name: Instalar Libs
+        run: pip install -r requirements.txt
+      - name: Rodar Scraper
+        run: python main.py
+      - name: Salvar no Repo
+        run: |
+          git config --global user.name 'Bot'
+          git config --global user.email 'bot@bot.com'
+          git add feed.xml
+          git commit -m "Update" || exit 0
+          git push
