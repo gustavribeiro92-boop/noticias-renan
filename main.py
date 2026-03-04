@@ -7,52 +7,49 @@ def extrair_noticias():
     base_url = "https://www.camara-americana.sp.gov.br"
     link_rss_final = "https://raw.githubusercontent.com/gustavribeiro92-boop/noticias-renan/main/feed.xml"
     
-    headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.0.0 Safari/537.36'}
+    headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'}
     
     try:
         response = requests.get(url_alvo, headers=headers, timeout=30)
         response.encoding = 'utf-8'
         soup = BeautifulSoup(response.text, 'html.parser')
         
-        # Busca todos os links que contenham '/Noticia/Detalhe/' no endereço
-        links_noticias = soup.find_all('a', href=lambda href: href and '/Noticia/Detalhe/' in href)
+        # O SEGREDO: Agora buscamos pela classe 'link-box' que vimos no seu HTML
+        blocos_noticias = soup.find_all('div', class_='link-box')
 
         fg = FeedGenerator()
         fg.id(url_alvo)
-        fg.title('Noticias - Renan de Angelo')
+        fg.title('Notícias - Renan de Angelo')
         fg.link(href=url_alvo, rel='alternate')
         fg.link(href=link_rss_final, rel='self')
-        fg.description('Feed de noticias do gabinete')
+        fg.description('Feed oficial de notícias da Câmara Municipal de Americana')
         fg.language('pt-br')
 
-        # Usamos um set para evitar notícias duplicadas
-        links_processados = set()
-
-        for link_tag in links_noticias:
-            href = link_tag['href'].strip()
-            full_link = base_url + href if href.startswith('/') else href
+        for bloco in blocos_noticias:
+            # Busca o título e o link dentro do <h4>
+            tag_h4 = bloco.find('h4', class_='color-link')
+            tag_a = tag_h4.find_parent('a') if tag_h4 else None
             
-            if full_link not in links_processados:
-                # O título geralmente está dentro de um h3 ou é o próprio texto do link
-                titulo = link_tag.get_text().strip()
-                if not titulo or len(titulo) < 10: # Se o texto for curto, tenta buscar no h3 vizinho
-                    parent = link_tag.find_parent()
-                    h3 = parent.find('h3') if parent else None
-                    titulo = h3.get_text().strip() if h3 else titulo
+            if tag_h4 and tag_a:
+                titulo = tag_h4.get_text().strip()
+                href = tag_a['href'].strip()
+                url_completa = base_url + href if href.startswith('/') else href
+                
+                # Busca a data no parágrafo acima do título
+                tag_data = bloco.find('p', class_='color-link')
+                data_texto = tag_data.get_text().strip() if tag_data else ""
 
-                if titulo and len(titulo) > 10:
-                    fe = fg.add_entry()
-                    fe.id(full_link)
-                    fe.title(titulo)
-                    fe.link(href=full_link)
-                    fe.description(f"Noticia oficial do vereador Renan de Angelo - Americana/SP")
-                    links_processados.add(full_link)
+                fe = fg.add_entry()
+                fe.id(url_completa)
+                fe.title(titulo)
+                fe.link(href=url_completa)
+                fe.description(f"Data: {data_texto} - Notícia oficial da Câmara de Americana.")
 
         fg.rss_file('feed.xml', pretty=True)
-        print(f"Sucesso! {len(links_processados)} noticias encontradas.")
+        print(f"Sucesso! {len(blocos_noticias)} notícias processadas.")
 
     except Exception as e:
-        print(f"Erro: {e}")
+        print(f"Erro no scraping: {e}")
 
 if __name__ == "__main__":
     extrair_noticias()
