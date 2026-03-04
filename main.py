@@ -1,9 +1,9 @@
 import requests
 from bs4 import BeautifulSoup
 from feedgen.feed import FeedGenerator
+from datetime import datetime
 
 def extrair_noticias():
-    # URL filtrada para o vereador Renan de Angelo (ID 160)
     url_alvo = "https://www.camara-americana.sp.gov.br/Noticia/PaginaVereador/1?vereador=160"
     base_url = "https://www.camara-americana.sp.gov.br"
     link_rss_final = "https://raw.githubusercontent.com/gustavribeiro92-boop/noticias-renan/main/feed.xml"
@@ -15,7 +15,6 @@ def extrair_noticias():
         response.encoding = 'utf-8'
         soup = BeautifulSoup(response.text, 'html.parser')
         
-        # O HTML da Câmara usa 'link-box' para cada bloco de notícia
         blocos_noticias = soup.find_all('div', class_='link-box')
 
         fg = FeedGenerator()
@@ -27,27 +26,43 @@ def extrair_noticias():
         fg.language('pt-br')
 
         for bloco in blocos_noticias:
-            # O título está dentro de um <h4> e o link no <a> que o envolve
             tag_h4 = bloco.find('h4', class_='color-link')
             tag_a = bloco.find('a', href=True)
             
+            # Extração da Imagem
+            tag_img = bloco.find('img')
+            url_img = base_url + tag_img['src'] if tag_img and tag_img.get('src') else ""
+
             if tag_h4 and tag_a:
                 titulo = tag_h4.get_text().strip()
                 href = tag_a['href'].strip()
                 url_completa = base_url + href if href.startswith('/') else href
                 
-                # A data está no parágrafo com classe 'color-link'
+                # Extração e formatação da Data para Ordem Cronológica
                 tag_p_data = bloco.find('p', class_='color-link')
                 data_texto = tag_p_data.get_text().strip() if tag_p_data else ""
-
+                
                 fe = fg.add_entry()
                 fe.id(url_completa)
                 fe.title(titulo)
                 fe.link(href=url_completa)
-                fe.description(f"Data: {data_texto} - Notícia oficial da Câmara de Americana.")
+                
+                # Tenta converter a data (ex: 03/03/2026) para o formato que o RSS entende
+                try:
+                    data_obj = datetime.strptime(data_texto, '%d/%m/%Y')
+                    fe.published(data_obj.replace(tzinfo=None))
+                except:
+                    pass
+
+                # Insere a imagem para o Feedzy reconhecer
+                if url_img:
+                    fe.enclosure(url_img, 0, 'image/jpeg')
+                    fe.description(f'<img src="{url_img}" style="width:100%" /><br/>{titulo}')
+                else:
+                    fe.description(f"Notícia oficial da Câmara de Americana - {data_texto}")
 
         fg.rss_file('feed.xml', pretty=True)
-        print(f"Sucesso! {len(blocos_noticias)} notícias encontradas.")
+        print(f"Sucesso! {len(blocos_noticias)} notícias processadas com imagens.")
 
     except Exception as e:
         print(f"Erro no scraping: {e}")
