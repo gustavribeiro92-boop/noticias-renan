@@ -5,17 +5,15 @@ from datetime import datetime
 import time
 
 def extrair_noticias():
-    # Adicionamos um parâmetro aleatório no final da URL para "enganar" o cache do site da Câmara
+    # Anti-cache para forçar o site da Câmara a mostrar o que há de novo hoje (26/03)
     timestamp = int(time.time())
     url_alvo = f"https://www.camara-americana.sp.gov.br/Noticia/PaginaVereador/1?vereador=160&cache={timestamp}"
     base_url = "https://www.camara-americana.sp.gov.br"
     link_rss_final = "https://raw.githubusercontent.com/gustavribeiro92-boop/noticias-renan/main/feed.xml"
     
-    # Headers mais completos para parecer um acesso humano real de 2026
     headers = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
-        'Cache-Control': 'no-cache',
-        'Pragma': 'no-cache'
+        'Cache-Control': 'no-cache'
     }
     
     try:
@@ -39,6 +37,7 @@ def extrair_noticias():
                 data_texto = tag_p_data.get_text().strip() if tag_p_data else ""
                 
                 try:
+                    # Converte "26/03/2026" em um objeto que o Python consegue ordenar
                     data_obj = datetime.strptime(data_texto, '%d/%m/%Y')
                 except:
                     data_obj = datetime.now()
@@ -51,7 +50,8 @@ def extrair_noticias():
                     'data_str': data_texto
                 })
 
-        # Ordenação garantida: Mais recentes primeiro
+        # --- O SEGREDO DA ORDEM ---
+        # Ordenamos do mais novo para o mais antigo antes de criar o XML
         noticias_lista.sort(key=lambda x: x['data'], reverse=True)
 
         fg = FeedGenerator()
@@ -59,7 +59,7 @@ def extrair_noticias():
         fg.title('Notícias - Renan de Angelo')
         fg.link(href=url_alvo, rel='alternate')
         fg.link(href=link_rss_final, rel='self')
-        fg.description(f'Feed atualizado em {datetime.now().strftime("%d/%m/%Y %H:%M")}')
+        fg.description(f'Última atualização do robô: {datetime.now().strftime("%d/%m/%Y %H:%M")}')
         fg.language('pt-br')
 
         for n in noticias_lista:
@@ -67,7 +67,9 @@ def extrair_noticias():
             fe.id(n['url'])
             fe.title(n['titulo'])
             fe.link(href=n['url'])
-            fe.pubDate(n['data'].replace(tzinfo=None))
+            
+            # Ajuste: Usamos pubDate com timezone fixo para o WordPress não se perder
+            fe.pubDate(n['data'].replace(hour=12, minute=0, second=0, tzinfo=None))
             
             if n['img']:
                 fe.enclosure(n['img'], 0, 'image/jpeg')
@@ -76,7 +78,7 @@ def extrair_noticias():
                 fe.description(f'{n["data_str"]} - {n["titulo"]}')
 
         fg.rss_file('feed.xml', pretty=True)
-        print(f"Sucesso! {len(noticias_lista)} notícias encontradas. Última: {noticias_lista[0]['data_str'] if noticias_lista else 'Nenhuma'}")
+        print(f"Sucesso! {len(noticias_lista)} notícias ordenadas no feed.")
 
     except Exception as e:
         print(f"Erro: {e}")
