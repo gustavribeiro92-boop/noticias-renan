@@ -1,89 +1,133 @@
-import requests
-from bs4 import BeautifulSoup
-from feedgen.feed import FeedGenerator
-from datetime import datetime
-import time
-
-def extrair_noticias():
-    # Técnica de Cache Busting: Adiciona um número aleatório na URL para forçar o site a atualizar
-    timestamp_cache = int(time.time())
-    url_alvo = f"https://www.camara-americana.sp.gov.br/Noticia/PaginaVereador/1?vereador=160&t={timestamp_cache}"
-    base_url = "https://www.camara-americana.sp.gov.br"
-    link_rss_final = "https://raw.githubusercontent.com/gustavribeiro92-boop/noticias-renan/main/feed.xml"
-    
-    headers = {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
-        'Cache-Control': 'no-cache',
-        'Pragma': 'no-cache'
-    }
-    
-    try:
-        response = requests.get(url_alvo, headers=headers, timeout=30)
-        response.encoding = 'utf-8'
-        soup = BeautifulSoup(response.text, 'html.parser')
-        
-        blocos = soup.find_all('div', class_='link-box')
-        noticias_lista = []
-
-        for bloco in blocos:
-            tag_h4 = bloco.find('h4', class_='color-link')
-            tag_a = bloco.find('a', href=True)
-            tag_img = bloco.find('img')
-            tag_p_data = bloco.find('p', class_='color-link')
-            
-            if tag_h4 and tag_a:
-                titulo = tag_h4.get_text().strip()
-                url_completa = base_url + tag_a['href'].strip() if tag_a['href'].startswith('/') else tag_a['href'].strip()
-                url_img = base_url + tag_img['src'] if tag_img and tag_img.get('src') else ""
-                data_texto = tag_p_data.get_text().strip() if tag_p_data else ""
-                
-                try:
-                    data_obj = datetime.strptime(data_texto, '%d/%m/%Y')
-                except:
-                    data_obj = datetime.now()
-
-                noticias_lista.append({
-                    'titulo': titulo,
-                    'url': url_completa,
-                    'img': url_img,
-                    'data': data_obj,
-                    'data_str': data_texto
-                })
-
-        # Ordenação: Recente no topo
-        noticias_lista.sort(key=lambda x: x['data'], reverse=True)
-
-        fg = FeedGenerator()
-        fg.id(url_alvo)
-        fg.title('Notícias - Renan de Angelo')
-        fg.link(href=url_alvo, rel='alternate')
-        fg.link(href=link_rss_final, rel='self')
-        fg.description('Feed oficial de notícias da Câmara Municipal de Americana')
-        fg.language('pt-br')
-        # Define a data da última atualização como AGORA
-        fg.lastBuildDate(datetime.now(None))
-
-        for i, n in enumerate(noticias_lista):
-            fe = fg.add_entry()
-            fe.id(n['url'])
-            fe.title(n['titulo'])
-            fe.link(href=n['url'])
-            
-            # Ajuste de hora para garantir a ordem no WordPress
-            hora_fake = n['data'].replace(hour=23, minute=59 - (i % 60), second=0)
-            fe.pubDate(hora_fake)
-            
-            if n['img']:
-                fe.enclosure(n['img'], 0, 'image/jpeg')
-                fe.description(f'<img src="{n["img"]}" style="width:100%"/><br/>{n["data_str"]} - {n["titulo"]}')
-            else:
-                fe.description(f'{n["data_str"]} - {n["titulo"]}')
-
-        fg.rss_file('feed.xml', pretty=True)
-        print(f"Sucesso! {len(noticias_lista)} notícias processadas.")
-
-    except Exception as e:
-        print(f"Erro: {e}")
-
-if __name__ == "__main__":
-    extrair_noticias()
+<?xml version='1.0' encoding='UTF-8'?>
+<rss xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/" version="2.0">
+  <channel>
+    <title>Notícias - Renan de Angelo</title>
+    <link>https://raw.githubusercontent.com/gustavribeiro92-boop/noticias-renan/main/feed.xml</link>
+    <description>Feed oficial de notícias da Câmara Municipal de Americana</description>
+    <atom:link href="https://raw.githubusercontent.com/gustavribeiro92-boop/noticias-renan/main/feed.xml" rel="self"/>
+    <docs>http://www.rssboard.org/rss-specification</docs>
+    <generator>python-feedgen</generator>
+    <language>pt-br</language>
+    <lastBuildDate>Thu, 26 Mar 2026 13:09:50 -0300</lastBuildDate>
+    <item>
+      <title>Prêmio Mulheres Destaque do Ano 2026 é entregue pela Câmara em sessão solene</title>
+      <link>https://www.camara-americana.sp.gov.br/noticias/premio-mulheres-destaque-do-ano-2026-e-entregue-pela-camara-em-sessao-solene</link>
+      <description>&lt;img src="https://www.camara-americana.sp.gov.br/Arquivos/Noticias/1773150202168-713.jpg" style="width:100%"/&gt;&lt;br/&gt;10/03/2026 - Prêmio Mulheres Destaque do Ano 2026 é entregue pela Câmara em sessão solene</description>
+      <guid isPermaLink="false">https://www.camara-americana.sp.gov.br/noticias/premio-mulheres-destaque-do-ano-2026-e-entregue-pela-camara-em-sessao-solene</guid>
+      <enclosure url="https://www.camara-americana.sp.gov.br/Arquivos/Noticias/1773150202168-713.jpg" length="0" type="image/jpeg"/>
+      <pubDate>Tue, 10 Mar 2026 23:45:00 -0300</pubDate>
+    </item>
+    <item>
+      <title>Renan de Angelo cobra transparência sobre manutenção de praças e áreas verdes em Americana</title>
+      <link>https://www.camara-americana.sp.gov.br/noticias/renan-de-angelo-cobra-transparencia-sobre-manutencao-de-pracas-e-areas-verdes-em-americana</link>
+      <description>&lt;img src="https://www.camara-americana.sp.gov.br/Arquivos/Noticias/1773152684157-921.jpg" style="width:100%"/&gt;&lt;br/&gt;10/03/2026 - Prêmio Mulheres Destaque do Ano 2026 é entregue pela Câmara em sessão solene</description>
+      <guid isPermaLink="false">https://www.camara-americana.sp.gov.br/noticias/renan-de-angelo-cobra-transparencia-sobre-manutencao-de-pracas-e-areas-verdes-em-americana</guid>
+      <enclosure url="https://www.camara-americana.sp.gov.br/Arquivos/Noticias/1773152684157-921.jpg" length="0" type="image/jpeg"/>
+      <pubDate>Tue, 10 Mar 2026 23:46:00 -0300</pubDate>
+    </item>
+    <item>
+      <title>Vereadores aprovam atualização do Plano Municipal de Gestão Integrada de Resíduos Sólidos</title>
+      <link>https://www.camara-americana.sp.gov.br/noticias/vereadores-aprovam-atualizacao-do-plano-municipal-de-gestao-integrada-de-residuos-solidos</link>
+      <description>&lt;img src="https://www.camara-americana.sp.gov.br/Arquivos/Noticias/1773177495195-157.jpg" style="width:100%"/&gt;&lt;br/&gt;10/03/2026 - Prêmio Mulheres Destaque do Ano 2026 é entregue pela Câmara em sessão solene</description>
+      <guid isPermaLink="false">https://www.camara-americana.sp.gov.br/noticias/vereadores-aprovam-atualizacao-do-plano-municipal-de-gestao-integrada-de-residuos-solidos</guid>
+      <enclosure url="https://www.camara-americana.sp.gov.br/Arquivos/Noticias/1773177495195-157.jpg" length="0" type="image/jpeg"/>
+      <pubDate>Tue, 10 Mar 2026 23:47:00 -0300</pubDate>
+    </item>
+    <item>
+      <title>Renan de Angelo sugere divulgação de ferramenta do SUS para ajudar pessoas com problemas com apostas</title>
+      <link>https://www.camara-americana.sp.gov.br/noticias/renan-de-angelo-sugere-divulgacao-de-ferramenta-do-sus-para-ajudar-pessoas-com-problemas-com-apostas</link>
+      <description>&lt;img src="https://www.camara-americana.sp.gov.br/Arquivos/Noticias/1773239737639-556.jpg" style="width:100%"/&gt;&lt;br/&gt;11/03/2026 - Prêmio Mulheres Destaque do Ano 2026 é entregue pela Câmara em sessão solene</description>
+      <guid isPermaLink="false">https://www.camara-americana.sp.gov.br/noticias/renan-de-angelo-sugere-divulgacao-de-ferramenta-do-sus-para-ajudar-pessoas-com-problemas-com-apostas</guid>
+      <enclosure url="https://www.camara-americana.sp.gov.br/Arquivos/Noticias/1773239737639-556.jpg" length="0" type="image/jpeg"/>
+      <pubDate>Wed, 11 Mar 2026 23:48:00 -0300</pubDate>
+    </item>
+    <item>
+      <title>Renan de Angelo discute soluções tecnológicas para gestão pública com secretário de Tecnologia e Eficiência de Limeira</title>
+      <link>https://www.camara-americana.sp.gov.br/noticias/renan-de-angelo-discute-solucoes-tecnologicas-para-gestao-publica-com-secretario-de-tecnologia-e-eficiencia-de-limeira</link>
+      <description>&lt;img src="https://www.camara-americana.sp.gov.br/Arquivos/Noticias/1773340744797-866.png" style="width:100%"/&gt;&lt;br/&gt;12/03/2026 - Prêmio Mulheres Destaque do Ano 2026 é entregue pela Câmara em sessão solene</description>
+      <guid isPermaLink="false">https://www.camara-americana.sp.gov.br/noticias/renan-de-angelo-discute-solucoes-tecnologicas-para-gestao-publica-com-secretario-de-tecnologia-e-eficiencia-de-limeira</guid>
+      <enclosure url="https://www.camara-americana.sp.gov.br/Arquivos/Noticias/1773340744797-866.png" length="0" type="image/jpeg"/>
+      <pubDate>Thu, 12 Mar 2026 23:49:00 -0300</pubDate>
+    </item>
+    <item>
+      <title>Talitha De Nadai e Renan de Angelo conhecem modelo de atendimento e prevenção do Instituto do Câncer Dr. Arnaldo</title>
+      <link>https://www.camara-americana.sp.gov.br/noticias/talitha-de-nadai-e-renan-de-angelo-conhecem-modelo-de-atendimento-e-prevencao-do-instituto-do-cancer-dr-arnaldo</link>
+      <description>&lt;img src="https://www.camara-americana.sp.gov.br/Arquivos/Noticias/1773430056207-988.jpeg" style="width:100%"/&gt;&lt;br/&gt;13/03/2026 - Prêmio Mulheres Destaque do Ano 2026 é entregue pela Câmara em sessão solene</description>
+      <guid isPermaLink="false">https://www.camara-americana.sp.gov.br/noticias/talitha-de-nadai-e-renan-de-angelo-conhecem-modelo-de-atendimento-e-prevencao-do-instituto-do-cancer-dr-arnaldo</guid>
+      <enclosure url="https://www.camara-americana.sp.gov.br/Arquivos/Noticias/1773430056207-988.jpeg" length="0" type="image/jpeg"/>
+      <pubDate>Fri, 13 Mar 2026 23:50:00 -0300</pubDate>
+    </item>
+    <item>
+      <title>Renan de Angelo participa de apresentação de programa de prevenção à violência contra a mulher na Afresp</title>
+      <link>https://www.camara-americana.sp.gov.br/noticias/renan-de-angelo-participa-de-apresentacao-de-programa-de-prevencao-a-violencia-contra-a-mulher-na-afresp</link>
+      <description>&lt;img src="https://www.camara-americana.sp.gov.br/Arquivos/Noticias/1773430559092-477.png" style="width:100%"/&gt;&lt;br/&gt;13/03/2026 - Prêmio Mulheres Destaque do Ano 2026 é entregue pela Câmara em sessão solene</description>
+      <guid isPermaLink="false">https://www.camara-americana.sp.gov.br/noticias/renan-de-angelo-participa-de-apresentacao-de-programa-de-prevencao-a-violencia-contra-a-mulher-na-afresp</guid>
+      <enclosure url="https://www.camara-americana.sp.gov.br/Arquivos/Noticias/1773430559092-477.png" length="0" type="image/jpeg"/>
+      <pubDate>Fri, 13 Mar 2026 23:51:00 -0300</pubDate>
+    </item>
+    <item>
+      <title>Aprovada criação de Comissão Especial de Estudos sobre valorização de servidores públicos municipais</title>
+      <link>https://www.camara-americana.sp.gov.br/noticias/aprovada-criacao-de-comissao-especial-de-estudos-sobre-valorizacao-de-servidores-publicos-municipais</link>
+      <description>&lt;img src="https://www.camara-americana.sp.gov.br/Arquivos/Noticias/1773776213081-712.jpg" style="width:100%"/&gt;&lt;br/&gt;17/03/2026 - Prêmio Mulheres Destaque do Ano 2026 é entregue pela Câmara em sessão solene</description>
+      <guid isPermaLink="false">https://www.camara-americana.sp.gov.br/noticias/aprovada-criacao-de-comissao-especial-de-estudos-sobre-valorizacao-de-servidores-publicos-municipais</guid>
+      <enclosure url="https://www.camara-americana.sp.gov.br/Arquivos/Noticias/1773776213081-712.jpg" length="0" type="image/jpeg"/>
+      <pubDate>Tue, 17 Mar 2026 23:52:00 -0300</pubDate>
+    </item>
+    <item>
+      <title>Renan de Angelo pede esclarecimentos sobre contratos e funcionamento da abordagem social em Americana</title>
+      <link>https://www.camara-americana.sp.gov.br/noticias/renan-de-angelo-pede-esclarecimentos-sobre-contratos-e-funcionamento-da-abordagem-social-em-americana</link>
+      <description>&lt;img src="https://www.camara-americana.sp.gov.br/Arquivos/Noticias/1773838453120-590.jpg" style="width:100%"/&gt;&lt;br/&gt;18/03/2026 - Prêmio Mulheres Destaque do Ano 2026 é entregue pela Câmara em sessão solene</description>
+      <guid isPermaLink="false">https://www.camara-americana.sp.gov.br/noticias/renan-de-angelo-pede-esclarecimentos-sobre-contratos-e-funcionamento-da-abordagem-social-em-americana</guid>
+      <enclosure url="https://www.camara-americana.sp.gov.br/Arquivos/Noticias/1773838453120-590.jpg" length="0" type="image/jpeg"/>
+      <pubDate>Wed, 18 Mar 2026 23:53:00 -0300</pubDate>
+    </item>
+    <item>
+      <title>Comissão de Defesa dos Direitos dos Animais da Câmara discute aprimoramento de políticas públicas</title>
+      <link>https://www.camara-americana.sp.gov.br/noticias/comissao-de-defesa-dos-direitos-dos-animais-da-camara-discute-aprimoramento-de-politicas-publicas</link>
+      <description>&lt;img src="https://www.camara-americana.sp.gov.br/Arquivos/Noticias/1773858142380-388.jpeg" style="width:100%"/&gt;&lt;br/&gt;18/03/2026 - Prêmio Mulheres Destaque do Ano 2026 é entregue pela Câmara em sessão solene</description>
+      <guid isPermaLink="false">https://www.camara-americana.sp.gov.br/noticias/comissao-de-defesa-dos-direitos-dos-animais-da-camara-discute-aprimoramento-de-politicas-publicas</guid>
+      <enclosure url="https://www.camara-americana.sp.gov.br/Arquivos/Noticias/1773858142380-388.jpeg" length="0" type="image/jpeg"/>
+      <pubDate>Wed, 18 Mar 2026 23:54:00 -0300</pubDate>
+    </item>
+    <item>
+      <title>Renan de Angelo pede manutenção no prédio da administração regional do São Vito</title>
+      <link>https://www.camara-americana.sp.gov.br/noticias/renan-de-angelo-pede-manutencao-no-predio-da-administracao-regional-do-sao-vito</link>
+      <description>&lt;img src="https://www.camara-americana.sp.gov.br/Arquivos/Noticias/1773931154509-655.jpg" style="width:100%"/&gt;&lt;br/&gt;19/03/2026 - Prêmio Mulheres Destaque do Ano 2026 é entregue pela Câmara em sessão solene</description>
+      <guid isPermaLink="false">https://www.camara-americana.sp.gov.br/noticias/renan-de-angelo-pede-manutencao-no-predio-da-administracao-regional-do-sao-vito</guid>
+      <enclosure url="https://www.camara-americana.sp.gov.br/Arquivos/Noticias/1773931154509-655.jpg" length="0" type="image/jpeg"/>
+      <pubDate>Thu, 19 Mar 2026 23:55:00 -0300</pubDate>
+    </item>
+    <item>
+      <title>Renan de Angelo pede fiscalização intensificada de preços em postos de combustíveis</title>
+      <link>https://www.camara-americana.sp.gov.br/noticias/renan-de-angelo-pede-fiscalizacao-intensificada-de-precos-em-postos-de-combustiveis</link>
+      <description>&lt;img src="https://www.camara-americana.sp.gov.br/Arquivos/Noticias/1774288941546-824.jpg" style="width:100%"/&gt;&lt;br/&gt;23/03/2026 - Prêmio Mulheres Destaque do Ano 2026 é entregue pela Câmara em sessão solene</description>
+      <guid isPermaLink="false">https://www.camara-americana.sp.gov.br/noticias/renan-de-angelo-pede-fiscalizacao-intensificada-de-precos-em-postos-de-combustiveis</guid>
+      <enclosure url="https://www.camara-americana.sp.gov.br/Arquivos/Noticias/1774288941546-824.jpg" length="0" type="image/jpeg"/>
+      <pubDate>Mon, 23 Mar 2026 23:56:00 -0300</pubDate>
+    </item>
+    <item>
+      <title>Renan de Angelo pede informações sobre fila de espera para procedimentos cirúrgicos</title>
+      <link>https://www.camara-americana.sp.gov.br/noticias/renan-de-angelo-pede-informacoes-sobre-fila-de-espera-para-procedimentos-cirurgicos</link>
+      <description>&lt;img src="https://www.camara-americana.sp.gov.br/Arquivos/Noticias/1774362241427-428.jpg" style="width:100%"/&gt;&lt;br/&gt;24/03/2026 - Prêmio Mulheres Destaque do Ano 2026 é entregue pela Câmara em sessão solene</description>
+      <guid isPermaLink="false">https://www.camara-americana.sp.gov.br/noticias/renan-de-angelo-pede-informacoes-sobre-fila-de-espera-para-procedimentos-cirurgicos</guid>
+      <enclosure url="https://www.camara-americana.sp.gov.br/Arquivos/Noticias/1774362241427-428.jpg" length="0" type="image/jpeg"/>
+      <pubDate>Tue, 24 Mar 2026 23:57:00 -0300</pubDate>
+    </item>
+    <item>
+      <title>Aprovado reajuste salarial de 8,36% aos servidores públicos municipais de Americana</title>
+      <link>https://www.camara-americana.sp.gov.br/noticias/aprovado-reajuste-salarial-de-836-aos-servidores-publicos-municipais-de-americana</link>
+      <description>&lt;img src="https://www.camara-americana.sp.gov.br/Arquivos/Noticias/1774381436834-903.jpg" style="width:100%"/&gt;&lt;br/&gt;24/03/2026 - Prêmio Mulheres Destaque do Ano 2026 é entregue pela Câmara em sessão solene</description>
+      <guid isPermaLink="false">https://www.camara-americana.sp.gov.br/noticias/aprovado-reajuste-salarial-de-836-aos-servidores-publicos-municipais-de-americana</guid>
+      <enclosure url="https://www.camara-americana.sp.gov.br/Arquivos/Noticias/1774381436834-903.jpg" length="0" type="image/jpeg"/>
+      <pubDate>Tue, 24 Mar 2026 23:58:00 -0300</pubDate>
+    </item>
+    <item>
+      <title>Renan de Angelo pede informações sobre câmeras de videomonitoramento em escolas de Americana</title>
+      <link>https://www.camara-americana.sp.gov.br/noticias/renan-de-angelo-pede-informacoes-sobre-cameras-de-videomonitoramento-em-escolas-de-americana</link>
+      <description>&lt;img src="https://www.camara-americana.sp.gov.br/Arquivos/Noticias/1774459631526-911.jpg" style="width:100%"/&gt;&lt;br/&gt;25/03/2026 - Prêmio Mulheres Destaque do Ano 2026 é entregue pela Câmara em sessão solene</description>
+      <guid isPermaLink="false">https://www.camara-americana.sp.gov.br/noticias/renan-de-angelo-pede-informacoes-sobre-cameras-de-videomonitoramento-em-escolas-de-americana</guid>
+      <enclosure url="https://www.camara-americana.sp.gov.br/Arquivos/Noticias/1774459631526-911.jpg" length="0" type="image/jpeg"/>
+      <pubDate>Wed, 25 Mar 2026 23:59:00 -0300</pubDate>
+    </item>
+  </channel>
+</rss>
