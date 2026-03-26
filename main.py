@@ -2,13 +2,21 @@ import requests
 from bs4 import BeautifulSoup
 from feedgen.feed import FeedGenerator
 from datetime import datetime
+import time
 
 def extrair_noticias():
-    url_alvo = "https://www.camara-americana.sp.gov.br/Noticia/PaginaVereador/1?vereador=160"
+    # Adicionamos um parâmetro aleatório no final da URL para "enganar" o cache do site da Câmara
+    timestamp = int(time.time())
+    url_alvo = f"https://www.camara-americana.sp.gov.br/Noticia/PaginaVereador/1?vereador=160&cache={timestamp}"
     base_url = "https://www.camara-americana.sp.gov.br"
     link_rss_final = "https://raw.githubusercontent.com/gustavribeiro92-boop/noticias-renan/main/feed.xml"
     
-    headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'}
+    # Headers mais completos para parecer um acesso humano real de 2026
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
+        'Cache-Control': 'no-cache',
+        'Pragma': 'no-cache'
+    }
     
     try:
         response = requests.get(url_alvo, headers=headers, timeout=30)
@@ -43,7 +51,7 @@ def extrair_noticias():
                     'data_str': data_texto
                 })
 
-        # ORDENAÇÃO EXPLÍCITA: Recente no topo
+        # Ordenação garantida: Mais recentes primeiro
         noticias_lista.sort(key=lambda x: x['data'], reverse=True)
 
         fg = FeedGenerator()
@@ -51,7 +59,7 @@ def extrair_noticias():
         fg.title('Notícias - Renan de Angelo')
         fg.link(href=url_alvo, rel='alternate')
         fg.link(href=link_rss_final, rel='self')
-        fg.description('Feed oficial de notícias da Câmara Municipal de Americana')
+        fg.description(f'Feed atualizado em {datetime.now().strftime("%d/%m/%Y %H:%M")}')
         fg.language('pt-br')
 
         for n in noticias_lista:
@@ -59,8 +67,6 @@ def extrair_noticias():
             fe.id(n['url'])
             fe.title(n['titulo'])
             fe.link(href=n['url'])
-            
-            # Ajuste de compatibilidade para o WordPress (pubDate)
             fe.pubDate(n['data'].replace(tzinfo=None))
             
             if n['img']:
@@ -70,7 +76,7 @@ def extrair_noticias():
                 fe.description(f'{n["data_str"]} - {n["titulo"]}')
 
         fg.rss_file('feed.xml', pretty=True)
-        print(f"Sucesso! {len(noticias_lista)} notícias ordenadas no topo.")
+        print(f"Sucesso! {len(noticias_lista)} notícias encontradas. Última: {noticias_lista[0]['data_str'] if noticias_lista else 'Nenhuma'}")
 
     except Exception as e:
         print(f"Erro: {e}")
