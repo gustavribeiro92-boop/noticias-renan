@@ -1,118 +1,89 @@
-<?xml version='1.0' encoding='UTF-8'?>
-<rss xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/" version="2.0">
-  <channel>
-    <title>Notícias - Renan de Angelo</title>
-    <link>https://raw.githubusercontent.com/gustavribeiro92-boop/noticias-renan/main/feed.xml</link>
-    <description>Feed oficial de notícias da Câmara Municipal de Americana</description>
-    <atom:link href="https://raw.githubusercontent.com/gustavribeiro92-boop/noticias-renan/main/feed.xml" rel="self"/>
-    <docs>http://www.rssboard.org/rss-specification</docs>
-    <generator>python-feedgen</generator>
-    <language>pt-br</language>
-    <lastBuildDate>Wed, 04 Mar 2026 14:35:10 +0000</lastBuildDate>
-    <item>
-      <title>Renan de Angelo verifica necessidade de sinalização no cruzamento das avenidas Saúde e Paschoal Ardito</title>
-      <link>https://www.camara-americana.sp.gov.br/noticias/renan-de-angelo-verifica-necessidade-de-sinalizacao-no-cruzamento-das-avenidas-saude-e-paschoal-ardito</link>
-      <description>&lt;img src="https://www.camara-americana.sp.gov.br/Arquivos/Noticias/1770662074502-590.jpg" style="width:100%" /&gt;&lt;br/&gt;Renan de Angelo verifica necessidade de sinalização no cruzamento das avenidas Saúde e Paschoal Ardito</description>
-      <guid isPermaLink="false">https://www.camara-americana.sp.gov.br/noticias/renan-de-angelo-verifica-necessidade-de-sinalizacao-no-cruzamento-das-avenidas-saude-e-paschoal-ardito</guid>
-      <enclosure url="https://www.camara-americana.sp.gov.br/Arquivos/Noticias/1770662074502-590.jpg" length="0" type="image/jpeg"/>
-    </item>
-    <item>
-      <title>Vereadores aprovam criação de lei para punir vandalismo de bens públicos e promover medidas educativas</title>
-      <link>https://www.camara-americana.sp.gov.br/noticias/vereadores-aprovam-criacao-de-lei-para-punir-vandalismo-de-bens-publicos-e-promover-medidas-educativas</link>
-      <description>&lt;img src="https://www.camara-americana.sp.gov.br/Arquivos/Noticias/1770753403100-181.jpg" style="width:100%" /&gt;&lt;br/&gt;Vereadores aprovam criação de lei para punir vandalismo de bens públicos e promover medidas educativas</description>
-      <guid isPermaLink="false">https://www.camara-americana.sp.gov.br/noticias/vereadores-aprovam-criacao-de-lei-para-punir-vandalismo-de-bens-publicos-e-promover-medidas-educativas</guid>
-      <enclosure url="https://www.camara-americana.sp.gov.br/Arquivos/Noticias/1770753403100-181.jpg" length="0" type="image/jpeg"/>
-    </item>
-    <item>
-      <title>Renan de Angelo pede informações sobre desassoreamento na Avenida Rafael Vitta</title>
-      <link>https://www.camara-americana.sp.gov.br/noticias/renan-de-angelo-pede-informacoes-sobre-desassoreamento-na-avenida-rafael-vitta</link>
-      <description>&lt;img src="https://www.camara-americana.sp.gov.br/Arquivos/Noticias/1770813384226-290.jpg" style="width:100%" /&gt;&lt;br/&gt;Renan de Angelo pede informações sobre desassoreamento na Avenida Rafael Vitta</description>
-      <guid isPermaLink="false">https://www.camara-americana.sp.gov.br/noticias/renan-de-angelo-pede-informacoes-sobre-desassoreamento-na-avenida-rafael-vitta</guid>
-      <enclosure url="https://www.camara-americana.sp.gov.br/Arquivos/Noticias/1770813384226-290.jpg" length="0" type="image/jpeg"/>
-    </item>
-    <item>
-      <title>Renan de Angelo discute integração regional com vice-prefeito de Santa Bárbara d’Oeste</title>
-      <link>https://www.camara-americana.sp.gov.br/noticias/renan-de-angelo-discute-integracao-regional-com-vice-prefeito-de-santa-barbara-doeste</link>
-      <description>&lt;img src="https://www.camara-americana.sp.gov.br/Arquivos/Noticias/1770915905668-647.jpeg" style="width:100%" /&gt;&lt;br/&gt;Renan de Angelo discute integração regional com vice-prefeito de Santa Bárbara d’Oeste</description>
-      <guid isPermaLink="false">https://www.camara-americana.sp.gov.br/noticias/renan-de-angelo-discute-integracao-regional-com-vice-prefeito-de-santa-barbara-doeste</guid>
-      <enclosure url="https://www.camara-americana.sp.gov.br/Arquivos/Noticias/1770915905668-647.jpeg" length="0" type="image/jpeg"/>
-    </item>
-    <item>
-      <title>Renan de Angelo pede informações sobre atuação de funerárias em atendimento social</title>
-      <link>https://www.camara-americana.sp.gov.br/noticias/renan-de-angelo-pede-informacoes-sobre-atuacao-de-funerarias-em-atendimento-social</link>
-      <description>&lt;img src="https://www.camara-americana.sp.gov.br/Arquivos/Noticias/1771005642344-825.png" style="width:100%" /&gt;&lt;br/&gt;Renan de Angelo pede informações sobre atuação de funerárias em atendimento social</description>
-      <guid isPermaLink="false">https://www.camara-americana.sp.gov.br/noticias/renan-de-angelo-pede-informacoes-sobre-atuacao-de-funerarias-em-atendimento-social</guid>
-      <enclosure url="https://www.camara-americana.sp.gov.br/Arquivos/Noticias/1771005642344-825.png" length="0" type="image/jpeg"/>
-    </item>
-    <item>
-      <title>Vereadores aprovam 48 proposituras na sessão ordinária desta quinta-feira (19)</title>
-      <link>https://www.camara-americana.sp.gov.br/noticias/vereadores-aprovam-48-proposituras-na-sessao-ordinaria-desta-quinta-feira-19</link>
-      <description>&lt;img src="https://www.camara-americana.sp.gov.br/Arquivos/Noticias/1771529513052-383.jpg" style="width:100%" /&gt;&lt;br/&gt;Vereadores aprovam 48 proposituras na sessão ordinária desta quinta-feira (19)</description>
-      <guid isPermaLink="false">https://www.camara-americana.sp.gov.br/noticias/vereadores-aprovam-48-proposituras-na-sessao-ordinaria-desta-quinta-feira-19</guid>
-      <enclosure url="https://www.camara-americana.sp.gov.br/Arquivos/Noticias/1771529513052-383.jpg" length="0" type="image/jpeg"/>
-    </item>
-    <item>
-      <title>Renan de Angelo pede informações sobre videomonitoramento com reconhecimento facial em Americana</title>
-      <link>https://www.camara-americana.sp.gov.br/noticias/renan-de-angelo-pede-informacoes-sobre-videomonitoramento-com-reconhecimento-facial-em-americana</link>
-      <description>&lt;img src="https://www.camara-americana.sp.gov.br/Arquivos/Noticias/1771869063771-18.png" style="width:100%" /&gt;&lt;br/&gt;Renan de Angelo pede informações sobre videomonitoramento com reconhecimento facial em Americana</description>
-      <guid isPermaLink="false">https://www.camara-americana.sp.gov.br/noticias/renan-de-angelo-pede-informacoes-sobre-videomonitoramento-com-reconhecimento-facial-em-americana</guid>
-      <enclosure url="https://www.camara-americana.sp.gov.br/Arquivos/Noticias/1771869063771-18.png" length="0" type="image/jpeg"/>
-    </item>
-    <item>
-      <title>Plano Municipal de Gestão Integrada de Resíduos Sólidos é discutido em segunda audiência pública na Câmara</title>
-      <link>https://www.camara-americana.sp.gov.br/noticias/plano-municipal-de-gestao-integrada-de-residuos-solidos-e-discutido-em-segunda-audiencia-publica-na-camara</link>
-      <description>&lt;img src="https://www.camara-americana.sp.gov.br/Arquivos/Noticias/1771939907271-191.jpg" style="width:100%" /&gt;&lt;br/&gt;Plano Municipal de Gestão Integrada de Resíduos Sólidos é discutido em segunda audiência pública na Câmara</description>
-      <guid isPermaLink="false">https://www.camara-americana.sp.gov.br/noticias/plano-municipal-de-gestao-integrada-de-residuos-solidos-e-discutido-em-segunda-audiencia-publica-na-camara</guid>
-      <enclosure url="https://www.camara-americana.sp.gov.br/Arquivos/Noticias/1771939907271-191.jpg" length="0" type="image/jpeg"/>
-    </item>
-    <item>
-      <title>Vereadores aprovam 27 proposituras na sessão ordinária desta terça-feira (24)</title>
-      <link>https://www.camara-americana.sp.gov.br/noticias/vereadores-aprovam-27-proposituras-na-sessao-ordinaria-desta-terca-feira-24</link>
-      <description>&lt;img src="https://www.camara-americana.sp.gov.br/Arquivos/Noticias/1771961440365-449.jpg" style="width:100%" /&gt;&lt;br/&gt;Vereadores aprovam 27 proposituras na sessão ordinária desta terça-feira (24)</description>
-      <guid isPermaLink="false">https://www.camara-americana.sp.gov.br/noticias/vereadores-aprovam-27-proposituras-na-sessao-ordinaria-desta-terca-feira-24</guid>
-      <enclosure url="https://www.camara-americana.sp.gov.br/Arquivos/Noticias/1771961440365-449.jpg" length="0" type="image/jpeg"/>
-    </item>
-    <item>
-      <title>Renan de Angelo pede reparos no asfalto do Jardim Paulistano</title>
-      <link>https://www.camara-americana.sp.gov.br/noticias/renan-de-angelo-pede-reparos-no-asfalto-do-jardim-paulistano</link>
-      <description>&lt;img src="https://www.camara-americana.sp.gov.br/Arquivos/Noticias/1772027783760-833.jpg" style="width:100%" /&gt;&lt;br/&gt;Renan de Angelo pede reparos no asfalto do Jardim Paulistano</description>
-      <guid isPermaLink="false">https://www.camara-americana.sp.gov.br/noticias/renan-de-angelo-pede-reparos-no-asfalto-do-jardim-paulistano</guid>
-      <enclosure url="https://www.camara-americana.sp.gov.br/Arquivos/Noticias/1772027783760-833.jpg" length="0" type="image/jpeg"/>
-    </item>
-    <item>
-      <title>Metas fiscais do 3º quadrimestre de 2025 são debatidas em audiência pública na Câmara</title>
-      <link>https://www.camara-americana.sp.gov.br/noticias/metas-fiscais-do-3o-quadrimestre-de-2025-sao-debatidas-em-audiencia-publica-na-camara</link>
-      <description>&lt;img src="https://www.camara-americana.sp.gov.br/Arquivos/Noticias/1772038704738-58.jpg" style="width:100%" /&gt;&lt;br/&gt;Metas fiscais do 3º quadrimestre de 2025 são debatidas em audiência pública na Câmara</description>
-      <guid isPermaLink="false">https://www.camara-americana.sp.gov.br/noticias/metas-fiscais-do-3o-quadrimestre-de-2025-sao-debatidas-em-audiencia-publica-na-camara</guid>
-      <enclosure url="https://www.camara-americana.sp.gov.br/Arquivos/Noticias/1772038704738-58.jpg" length="0" type="image/jpeg"/>
-    </item>
-    <item>
-      <title>Renan de Angelo vistoria situação do calçamento em frente à Emei Sabiá</title>
-      <link>https://www.camara-americana.sp.gov.br/noticias/renan-de-angelo-vistoria-situacao-do-calcamento-em-frente-a-emei-sabia</link>
-      <description>&lt;img src="https://www.camara-americana.sp.gov.br/Arquivos/Noticias/1772110981509-131.png" style="width:100%" /&gt;&lt;br/&gt;Renan de Angelo vistoria situação do calçamento em frente à Emei Sabiá</description>
-      <guid isPermaLink="false">https://www.camara-americana.sp.gov.br/noticias/renan-de-angelo-vistoria-situacao-do-calcamento-em-frente-a-emei-sabia</guid>
-      <enclosure url="https://www.camara-americana.sp.gov.br/Arquivos/Noticias/1772110981509-131.png" length="0" type="image/jpeg"/>
-    </item>
-    <item>
-      <title>Renan de Angelo vistoria mato alto na praça dos Imigrantes, na Vila Santa Maria</title>
-      <link>https://www.camara-americana.sp.gov.br/noticias/renan-de-angelo-vistoria-mato-alto-na-praca-dos-imigrantes-na-vila-santa-maria</link>
-      <description>&lt;img src="https://www.camara-americana.sp.gov.br/Arquivos/Noticias/1772221147316-713.png" style="width:100%" /&gt;&lt;br/&gt;Renan de Angelo vistoria mato alto na praça dos Imigrantes, na Vila Santa Maria</description>
-      <guid isPermaLink="false">https://www.camara-americana.sp.gov.br/noticias/renan-de-angelo-vistoria-mato-alto-na-praca-dos-imigrantes-na-vila-santa-maria</guid>
-      <enclosure url="https://www.camara-americana.sp.gov.br/Arquivos/Noticias/1772221147316-713.png" length="0" type="image/jpeg"/>
-    </item>
-    <item>
-      <title>Renan de Angelo discute apoio do governo do estado para obra contra alagamentos na região da Avenida Bandeirantes</title>
-      <link>https://www.camara-americana.sp.gov.br/noticias/renan-de-angelo-discute-apoio-do-governo-do-estado-para-obra-contra-alagamentos-na-regiao-da-avenida-bandeirantes</link>
-      <description>&lt;img src="https://www.camara-americana.sp.gov.br/Arquivos/Noticias/1772458405882-430.jpg" style="width:100%" /&gt;&lt;br/&gt;Renan de Angelo discute apoio do governo do estado para obra contra alagamentos na região da Avenida Bandeirantes</description>
-      <guid isPermaLink="false">https://www.camara-americana.sp.gov.br/noticias/renan-de-angelo-discute-apoio-do-governo-do-estado-para-obra-contra-alagamentos-na-regiao-da-avenida-bandeirantes</guid>
-      <enclosure url="https://www.camara-americana.sp.gov.br/Arquivos/Noticias/1772458405882-430.jpg" length="0" type="image/jpeg"/>
-    </item>
-    <item>
-      <title>Aprovada proibição de venda de fogos de artifício que produzam barulho em Americana</title>
-      <link>https://www.camara-americana.sp.gov.br/noticias/aprovada-proibicao-de-venda-de-fogos-de-artificio-que-produzam-barulho-em-americana</link>
-      <description>&lt;img src="https://www.camara-americana.sp.gov.br/Arquivos/Noticias/1772567168682-911.jpg" style="width:100%" /&gt;&lt;br/&gt;Aprovada proibição de venda de fogos de artifício que produzam barulho em Americana</description>
-      <guid isPermaLink="false">https://www.camara-americana.sp.gov.br/noticias/aprovada-proibicao-de-venda-de-fogos-de-artificio-que-produzam-barulho-em-americana</guid>
-      <enclosure url="https://www.camara-americana.sp.gov.br/Arquivos/Noticias/1772567168682-911.jpg" length="0" type="image/jpeg"/>
-    </item>
-  </channel>
-</rss>
+import requests
+from bs4 import BeautifulSoup
+from feedgen.feed import FeedGenerator
+from datetime import datetime
+import time
+
+def extrair_noticias():
+    # Técnica de Cache Busting: Adiciona um número aleatório na URL para forçar o site a atualizar
+    timestamp_cache = int(time.time())
+    url_alvo = f"https://www.camara-americana.sp.gov.br/Noticia/PaginaVereador/1?vereador=160&t={timestamp_cache}"
+    base_url = "https://www.camara-americana.sp.gov.br"
+    link_rss_final = "https://raw.githubusercontent.com/gustavribeiro92-boop/noticias-renan/main/feed.xml"
+    
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
+        'Cache-Control': 'no-cache',
+        'Pragma': 'no-cache'
+    }
+    
+    try:
+        response = requests.get(url_alvo, headers=headers, timeout=30)
+        response.encoding = 'utf-8'
+        soup = BeautifulSoup(response.text, 'html.parser')
+        
+        blocos = soup.find_all('div', class_='link-box')
+        noticias_lista = []
+
+        for bloco in blocos:
+            tag_h4 = bloco.find('h4', class_='color-link')
+            tag_a = bloco.find('a', href=True)
+            tag_img = bloco.find('img')
+            tag_p_data = bloco.find('p', class_='color-link')
+            
+            if tag_h4 and tag_a:
+                titulo = tag_h4.get_text().strip()
+                url_completa = base_url + tag_a['href'].strip() if tag_a['href'].startswith('/') else tag_a['href'].strip()
+                url_img = base_url + tag_img['src'] if tag_img and tag_img.get('src') else ""
+                data_texto = tag_p_data.get_text().strip() if tag_p_data else ""
+                
+                try:
+                    data_obj = datetime.strptime(data_texto, '%d/%m/%Y')
+                except:
+                    data_obj = datetime.now()
+
+                noticias_lista.append({
+                    'titulo': titulo,
+                    'url': url_completa,
+                    'img': url_img,
+                    'data': data_obj,
+                    'data_str': data_texto
+                })
+
+        # Ordenação: Recente no topo
+        noticias_lista.sort(key=lambda x: x['data'], reverse=True)
+
+        fg = FeedGenerator()
+        fg.id(url_alvo)
+        fg.title('Notícias - Renan de Angelo')
+        fg.link(href=url_alvo, rel='alternate')
+        fg.link(href=link_rss_final, rel='self')
+        fg.description('Feed oficial de notícias da Câmara Municipal de Americana')
+        fg.language('pt-br')
+        # Define a data da última atualização como AGORA
+        fg.lastBuildDate(datetime.now(None))
+
+        for i, n in enumerate(noticias_lista):
+            fe = fg.add_entry()
+            fe.id(n['url'])
+            fe.title(n['titulo'])
+            fe.link(href=n['url'])
+            
+            # Ajuste de hora para garantir a ordem no WordPress
+            hora_fake = n['data'].replace(hour=23, minute=59 - (i % 60), second=0)
+            fe.pubDate(hora_fake)
+            
+            if n['img']:
+                fe.enclosure(n['img'], 0, 'image/jpeg')
+                fe.description(f'<img src="{n["img"]}" style="width:100%"/><br/>{n["data_str"]} - {n["titulo"]}')
+            else:
+                fe.description(f'{n["data_str"]} - {n["titulo"]}')
+
+        fg.rss_file('feed.xml', pretty=True)
+        print(f"Sucesso! {len(noticias_lista)} notícias processadas.")
+
+    except Exception as e:
+        print(f"Erro: {e}")
+
+if __name__ == "__main__":
+    extrair_noticias()
