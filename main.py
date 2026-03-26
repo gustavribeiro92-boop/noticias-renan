@@ -5,7 +5,7 @@ from datetime import datetime
 import time
 
 def extrair_noticias():
-    # Anti-cache para forçar o site da Câmara a mostrar o que há de novo hoje (26/03)
+    # Anti-cache para garantir que pegamos as notícias de 25/03 e 26/03
     timestamp = int(time.time())
     url_alvo = f"https://www.camara-americana.sp.gov.br/Noticia/PaginaVereador/1?vereador=160&cache={timestamp}"
     base_url = "https://www.camara-americana.sp.gov.br"
@@ -37,7 +37,7 @@ def extrair_noticias():
                 data_texto = tag_p_data.get_text().strip() if tag_p_data else ""
                 
                 try:
-                    # Converte "26/03/2026" em um objeto que o Python consegue ordenar
+                    # Converte a data do site para objeto datetime
                     data_obj = datetime.strptime(data_texto, '%d/%m/%Y')
                 except:
                     data_obj = datetime.now()
@@ -50,8 +50,7 @@ def extrair_noticias():
                     'data_str': data_texto
                 })
 
-        # --- O SEGREDO DA ORDEM ---
-        # Ordenamos do mais novo para o mais antigo antes de criar o XML
+        # 1. ORDENAÇÃO EXPLÍCITA: Mais recente primeiro
         noticias_lista.sort(key=lambda x: x['data'], reverse=True)
 
         fg = FeedGenerator()
@@ -59,17 +58,19 @@ def extrair_noticias():
         fg.title('Notícias - Renan de Angelo')
         fg.link(href=url_alvo, rel='alternate')
         fg.link(href=link_rss_final, rel='self')
-        fg.description(f'Última atualização do robô: {datetime.now().strftime("%d/%m/%Y %H:%M")}')
+        fg.description(f'Atualizado em: {datetime.now().strftime("%d/%m/%Y %H:%M")}')
         fg.language('pt-br')
 
-        for n in noticias_lista:
+        for i, n in enumerate(noticias_lista):
             fe = fg.add_entry()
             fe.id(n['url'])
             fe.title(n['titulo'])
             fe.link(href=n['url'])
             
-            # Ajuste: Usamos pubDate com timezone fixo para o WordPress não se perder
-            fe.pubDate(n['data'].replace(hour=12, minute=0, second=0, tzinfo=None))
+            # 2. AJUSTE DE HORA: O WordPress precisa de horas diferentes para ordenar certo.
+            # Vamos tirar 1 minuto de cada notícia para garantir a sequência.
+            hora_fake = n['data'].replace(hour=23, minute=59 - (i % 60), second=0, tzinfo=None)
+            fe.pubDate(hora_fake)
             
             if n['img']:
                 fe.enclosure(n['img'], 0, 'image/jpeg')
@@ -78,7 +79,7 @@ def extrair_noticias():
                 fe.description(f'{n["data_str"]} - {n["titulo"]}')
 
         fg.rss_file('feed.xml', pretty=True)
-        print(f"Sucesso! {len(noticias_lista)} notícias ordenadas no feed.")
+        print(f"Sucesso! {len(noticias_lista)} notícias processadas.")
 
     except Exception as e:
         print(f"Erro: {e}")
