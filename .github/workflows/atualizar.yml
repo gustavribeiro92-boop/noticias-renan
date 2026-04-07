@@ -5,19 +5,21 @@ on:
     - cron: '0 9,18 * * *'
   workflow_dispatch:
 
+# Permissão VIP obrigatória para o robô poder salvar arquivos
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
-    # ESSA É A CHAVE MESTRA: Garante que o robô tenha permissão para salvar arquivos
-    permissions:
-      contents: write 
-      
     steps:
-      - uses: actions/checkout@v3
+      - name: Baixar Repositorio
+        uses: actions/checkout@v4
+        
       - name: Setup Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
-          python-version: '3.9'
+          python-version: '3.10'
           
       - name: Instalar Libs
         run: pip install -r requirements.txt
@@ -25,12 +27,10 @@ jobs:
       - name: Rodar Scraper
         run: python main.py
         
-      - name: Salvar no Repo
-        run: |
-          git config --global user.name 'Bot-Renan'
-          git config --global user.email 'bot@camara.com'
-          # O '-f' força o Git a adicionar o arquivo, mesmo que haja algum bloqueio
-          git add -f feed.xml
-          # Se não houver erro, ele commita. Se houver, ele apenas avisa, mas NÃO cancela o Push
-          git commit -m "Atualizando RSS com notícias recentes" || echo "Sem alterações para commitar"
-          git push
+      - name: Forçar Salvação no GitHub
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "🤖 Feed atualizado automaticamente com as últimas notícias"
+          file_pattern: 'feed.xml'
+          commit_user_name: "BunnyRunnerX Bot"
+          commit_user_email: "bot@actions.github.com"
