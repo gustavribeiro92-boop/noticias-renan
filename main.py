@@ -32,11 +32,19 @@ def gerar_feed():
             tag_h4 = bloco.find('h4', class_='color-link')
             tag_a = bloco.find('a', href=True)
             tag_p_data = bloco.find('p', class_='color-link')
+            
+            # Buscando a tag da imagem
+            tag_img = bloco.find('img')
 
             if tag_h4 and tag_a:
                 titulo = tag_h4.get_text(strip=True)
                 link_final = base_url + tag_a['href'] if tag_a['href'].startswith('/') else tag_a['href']
                 data_str = tag_p_data.get_text(strip=True)[-10:] if tag_p_data else ""
+                
+                # Extraindo o link da imagem corretamente
+                img_url = ""
+                if tag_img and tag_img.get('src'):
+                    img_url = base_url + tag_img['src'] if tag_img['src'].startswith('/') else tag_img['src']
                 
                 try:
                     dt_obj = datetime.strptime(data_str, '%d/%m/%Y').replace(tzinfo=fuso_brasilia)
@@ -46,11 +54,12 @@ def gerar_feed():
                 noticias_lista.append({
                     'titulo': titulo,
                     'link': link_final,
-                    'data_obj': dt_obj
+                    'data_obj': dt_obj,
+                    'data_str': data_str,
+                    'img_url': img_url
                 })
 
-        # ---> A GRANDE MUDANÇA: Ordenamos das antigas para as novas. 
-        # Como o FeedGenerator empilha de baixo para cima, a mais nova ficará no TOPO.
+        # Ordem cronológica: Antigas primeiro, para as novas ficarem no topo do Feed
         noticias_lista.sort(key=lambda x: x['data_obj'])
 
         fg = FeedGenerator()
@@ -67,8 +76,16 @@ def gerar_feed():
             fe.title(n['titulo'])
             fe.link(href=n['link'])
             
-            # ---> OUTRA MUDANÇA: A notícia mais nova (última do loop) recebe o maior segundo,
-            # garantindo que o WordPress entenda a ordem cronológica perfeita.
+            # REINSERINDO A DESCRIÇÃO COM IMAGEM E DATA
+            if n['img_url']:
+                fe.enclosure(n['img_url'], 0, 'image/jpeg')
+                descricao_html = f'<img src="{n["img_url"]}" style="width:100%"/><br/>{n["data_str"]} - {n["titulo"]}'
+            else:
+                descricao_html = f'{n["data_str"]} - {n["titulo"]}'
+            
+            fe.description(descricao_html)
+            
+            # Segundos ajustados para manter a ordem exata no WordPress
             data_com_segundos = n['data_obj'].replace(hour=23, minute=59, second=i if i < 60 else 59)
             fe.pubDate(data_com_segundos)
 
