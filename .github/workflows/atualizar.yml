@@ -1,25 +1,36 @@
 name: Atualizar RSS
+
 on:
   schedule:
     - cron: '0 9,18 * * *'
   workflow_dispatch:
+
 jobs:
   build:
     runs-on: ubuntu-latest
+    # ESSA É A CHAVE MESTRA: Garante que o robô tenha permissão para salvar arquivos
+    permissions:
+      contents: write 
+      
     steps:
       - uses: actions/checkout@v3
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.9'
+          
       - name: Instalar Libs
         run: pip install -r requirements.txt
+        
       - name: Rodar Scraper
         run: python main.py
+        
       - name: Salvar no Repo
         run: |
-          git config --global user.name 'Bot'
-          git config --global user.email 'bot@bot.com'
-          git add feed.xml
-          git commit -m "Update" || exit 0
+          git config --global user.name 'Bot-Renan'
+          git config --global user.email 'bot@camara.com'
+          # O '-f' força o Git a adicionar o arquivo, mesmo que haja algum bloqueio
+          git add -f feed.xml
+          # Se não houver erro, ele commita. Se houver, ele apenas avisa, mas NÃO cancela o Push
+          git commit -m "Atualizando RSS com notícias recentes" || echo "Sem alterações para commitar"
           git push
