@@ -49,16 +49,15 @@ def gerar_feed():
                     'data_obj': dt_obj
                 })
 
-        noticias_lista.sort(key=lambda x: x['data_obj'], reverse=True)
+        # ---> A GRANDE MUDANÇA: Ordenamos das antigas para as novas. 
+        # Como o FeedGenerator empilha de baixo para cima, a mais nova ficará no TOPO.
+        noticias_lista.sort(key=lambda x: x['data_obj'])
 
         fg = FeedGenerator()
         fg.id(url_alvo)
         fg.title('Notícias - Renan de Angelo')
         fg.link(href=url_alvo, rel='alternate')
-        
-        # ---> CORREÇÃO AQUI: Descrição obrigatória do Canal RSS
         fg.description('Feed oficial de notícias do gabinete do vereador') 
-        
         fg.language('pt-br')
         fg.lastBuildDate(datetime.now(fuso_brasilia))
 
@@ -68,10 +67,9 @@ def gerar_feed():
             fe.title(n['titulo'])
             fe.link(href=n['link'])
             
-            # As notícias continuam SEM descrição aqui, como você pediu!
-            
-            # ---> CORREÇÃO AQUI: Segundos ajustados (59-i)
-            data_com_segundos = n['data_obj'].replace(hour=23, minute=59, second=59-i if i < 60 else 0)
+            # ---> OUTRA MUDANÇA: A notícia mais nova (última do loop) recebe o maior segundo,
+            # garantindo que o WordPress entenda a ordem cronológica perfeita.
+            data_com_segundos = n['data_obj'].replace(hour=23, minute=59, second=i if i < 60 else 59)
             fe.pubDate(data_com_segundos)
 
         xml_feed = fg.rss_str(pretty=True)
