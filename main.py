@@ -64,7 +64,7 @@ def gerar_feed():
             fe.id(n['link']) 
             fe.title(n['titulo'])
             fe.link(href=n['link'])
-            data_com_segundos = n['data_obj'].replace(hour=23, minute=59, second=60-i if i < 60 else 0)
+            data_com_segundos = n['data_obj'].replace(hour=23, minute=59, second=59-i if i < 60 else 0)
             fe.pubDate(data_com_segundos)
 
         # A MÁGICA AQUI: Retorna o XML diretamente para quem acessar o link, sem salvar nada!
