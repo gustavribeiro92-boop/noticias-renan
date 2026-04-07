@@ -5,20 +5,14 @@ from datetime import datetime, timezone, timedelta
 import time
 
 def extrair_noticias():
-    # Define fuso horário de Brasília
+    # Configuração de fuso horário e anti-cache
     fuso_brasilia = timezone(timedelta(hours=-3))
-    
-    # Gera um timestamp para evitar que a Câmara entregue página antiga (Cache Busting)
     ts = int(time.time())
-    url_alvo = f"https://www.camara-americana.sp.gov.br/Noticia/PaginaVereador/1?vereador=160&cachebuster={ts}"
+    url_alvo = f"https://www.camara-americana.sp.gov.br/Noticia/PaginaVereador/1?vereador=160&cache={ts}"
     base_url = "https://www.camara-americana.sp.gov.br"
     link_rss_final = "https://raw.githubusercontent.com/gustavribeiro92-boop/noticias-renan/main/feed.xml"
     
-    headers = {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36',
-        'Cache-Control': 'no-cache',
-        'Pragma': 'no-cache'
-    }
+    headers = {'User-Agent': 'Mozilla/5.0', 'Cache-Control': 'no-cache'}
     
     try:
         response = requests.get(url_alvo, headers=headers, timeout=30)
@@ -35,10 +29,10 @@ def extrair_noticias():
             tag_p_data = bloco.find('p', class_='color-link')
             
             if tag_h4 and tag_a:
-                # VARIÁVEL CORRIGIDA: Cada item agora tem seu próprio título
-                titulo_da_noticia = tag_h4.get_text().strip() 
-                url_item = base_url + tag_a['href'].strip() if tag_a['href'].startswith('/') else tag_a['href'].strip()
-                url_img = base_url + tag_img['src'] if tag_img and tag_img.get('src') else ""
+                # CORREÇÃO: Usar variáveis específicas para cada item dentro do loop
+                titulo_noticia = tag_h4.get_text().strip() 
+                url_noticia = base_url + tag_a['href'].strip() if tag_a['href'].startswith('/') else tag_a['href'].strip()
+                img_noticia = base_url + tag_img['src'] if tag_img and tag_img.get('src') else ""
                 data_texto = tag_p_data.get_text().strip() if tag_p_data else ""
                 
                 try:
@@ -47,14 +41,14 @@ def extrair_noticias():
                     data_obj = datetime.now(fuso_brasilia)
 
                 noticias_lista.append({
-                    'titulo': titulo_da_noticia,
-                    'url': url_item,
-                    'img': url_img,
+                    'titulo': titulo_noticia,
+                    'url': url_noticia,
+                    'img': img_noticia,
                     'data': data_obj,
                     'data_str': data_texto
                 })
 
-        # Ordenação: Mais recentes no topo
+        # Ordenar: Mais recentes primeiro
         noticias_lista.sort(key=lambda x: x['data'], reverse=True)
 
         fg = FeedGenerator()
@@ -71,19 +65,19 @@ def extrair_noticias():
             fe.title(n['titulo'])
             fe.link(href=n['url'])
             
-            # Diferencia os minutos para o WordPress ordenar corretamente
-            hora_fake = n['data'].replace(hour=23, minute=59 - (i % 60), second=0)
-            fe.pubDate(hora_fake)
+            # Garante que o WordPress entenda a ordem cronológica
+            hora_prioridade = n['data'].replace(hour=23, minute=59 - (i % 60), second=0)
+            fe.pubDate(hora_prioridade)
             
+            # CORREÇÃO: A descrição agora usa n['titulo'] para ser exclusiva de cada post
             if n['img']:
                 fe.enclosure(n['img'], 0, 'image/jpeg')
-                # DESCRIÇÃO CORRIGIDA: Agora usa n['titulo'] para não repetir o mesmo texto
                 fe.description(f'<img src="{n["img"]}" style="width:100%"/><br/>{n["data_str"]} - {n["titulo"]}')
             else:
                 fe.description(f'{n["data_str"]} - {n["titulo"]}')
 
         fg.rss_file('feed.xml', pretty=True)
-        print(f"Sucesso! {len(noticias_lista)} notícias processadas.")
+        print("Sucesso! O feed agora está com títulos e descrições individuais.")
 
     except Exception as e:
         print(f"Erro: {e}")
