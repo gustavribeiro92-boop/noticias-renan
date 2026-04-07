@@ -7,7 +7,6 @@ from flask import Flask, Response
 
 app = Flask(__name__)
 
-# Essa linha cria a URL do seu feed
 @app.route('/feed')
 def gerar_feed():
     fuso_brasilia = timezone(timedelta(hours=-3))
@@ -56,6 +55,10 @@ def gerar_feed():
         fg.id(url_alvo)
         fg.title('Notícias - Renan de Angelo')
         fg.link(href=url_alvo, rel='alternate')
+        
+        # ---> CORREÇÃO AQUI: Descrição obrigatória do Canal RSS
+        fg.description('Feed oficial de notícias do gabinete do vereador') 
+        
         fg.language('pt-br')
         fg.lastBuildDate(datetime.now(fuso_brasilia))
 
@@ -64,10 +67,13 @@ def gerar_feed():
             fe.id(n['link']) 
             fe.title(n['titulo'])
             fe.link(href=n['link'])
+            
+            # As notícias continuam SEM descrição aqui, como você pediu!
+            
+            # ---> CORREÇÃO AQUI: Segundos ajustados (59-i)
             data_com_segundos = n['data_obj'].replace(hour=23, minute=59, second=59-i if i < 60 else 0)
             fe.pubDate(data_com_segundos)
 
-        # A MÁGICA AQUI: Retorna o XML diretamente para quem acessar o link, sem salvar nada!
         xml_feed = fg.rss_str(pretty=True)
         return Response(xml_feed, mimetype='application/rss+xml')
 
