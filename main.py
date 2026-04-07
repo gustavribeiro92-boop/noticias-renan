@@ -3,16 +3,20 @@ from bs4 import BeautifulSoup
 from feedgen.feed import FeedGenerator
 from datetime import datetime, timezone, timedelta
 import time
+from flask import Flask, Response
 
-def extrair_noticias():
+app = Flask(__name__)
+
+# Essa linha cria a URL do seu feed
+@app.route('/feed')
+def gerar_feed():
     fuso_brasilia = timezone(timedelta(hours=-3))
-    # Anti-cache: gera um número diferente toda vez que o robô roda
     ts = int(time.time())
     url_alvo = f"https://www.camara-americana.sp.gov.br/Noticia/PaginaVereador/1?vereador=160&cachebuster={ts}"
     base_url = "https://www.camara-americana.sp.gov.br"
     
     headers = {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36',
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
         'Cache-Control': 'no-cache',
         'Pragma': 'no-cache'
     }
@@ -32,7 +36,6 @@ def extrair_noticias():
 
             if tag_h4 and tag_a:
                 titulo = tag_h4.get_text(strip=True)
-                # Garante que o link seja completo
                 link_final = base_url + tag_a['href'] if tag_a['href'].startswith('/') else tag_a['href']
                 data_str = tag_p_data.get_text(strip=True)[-10:] if tag_p_data else ""
                 
@@ -47,7 +50,6 @@ def extrair_noticias():
                     'data_obj': dt_obj
                 })
 
-        # Ordenar: Recente no topo
         noticias_lista.sort(key=lambda x: x['data_obj'], reverse=True)
 
         fg = FeedGenerator()
@@ -59,21 +61,18 @@ def extrair_noticias():
 
         for i, n in enumerate(noticias_lista):
             fe = fg.add_entry()
-            # O SEGREDO: O ID precisa ser o link. Se o ID mudar, o WordPress entende que é nova.
             fe.id(n['link']) 
             fe.title(n['titulo'])
             fe.link(href=n['link'])
-            # Removemos a fe.description() conforme solicitado
-            
-            # Ajuste de segundos para garantir a ordem visual no site
             data_com_segundos = n['data_obj'].replace(hour=23, minute=59, second=60-i if i < 60 else 0)
             fe.pubDate(data_com_segundos)
 
-        fg.rss_file('feed.xml', pretty=True)
-        print(f"Sucesso! {len(noticias_lista)} notícias processadas.")
+        # A MÁGICA AQUI: Retorna o XML diretamente para quem acessar o link, sem salvar nada!
+        xml_feed = fg.rss_str(pretty=True)
+        return Response(xml_feed, mimetype='application/rss+xml')
 
     except Exception as e:
-        print(f"Erro: {e}")
+        return f"Erro ao gerar feed: {e}", 500
 
 if __name__ == "__main__":
-    extrair_noticias()
+    app.run(host='0.0.0.0', port=8080)
